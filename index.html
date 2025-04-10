@@ -1,15 +1,112 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Trò chơi trốn tìm</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #4da6ff; /* nền xanh dương */
+      font-family: sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      color: white;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    .cell {
+      background-color: white;
+      width: 100px;
+      height: 100px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 30px;
+      line-height: 100px;
+      transition: background 0.3s;
+    }
+    .cell.found {
+      background-color: lightgreen;
+      pointer-events: none;
+    }
+    .cell.wrong {
+      background-color: #ff9999;
+    }
+    #broken-heart {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 150px;
+      z-index: 1000;
+    }
+    #restart {
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>Trò chơi trốn tìm</h1>
-  <div id="board"></div>
-  <p id="status"></p>
-  <img id="heart" src="https://i.imgur.com/b8PCxFP.png" />
-  <script src="script.js"></script>
+
+<h1>🔍 Tìm chỗ trốn!</h1>
+<p>Bạn chỉ được chọn 3 lần!</p>
+<div class="grid" id="grid"></div>
+
+<img id="broken-heart" src="https://cdn-icons-png.flaticon.com/512/1077/1077086.png" alt="Trái tim tan vỡ">
+<br>
+<button id="restart" onclick="initGame()">Chơi lại 🔁</button>
+
+<script>
+  const gridEl = document.getElementById('grid');
+  const brokenHeart = document.getElementById('broken-heart');
+  const restartBtn = document.getElementById('restart');
+
+  let hideIndex;
+  let attempts;
+
+  function initGame() {
+    gridEl.innerHTML = '';
+    brokenHeart.style.display = 'none';
+    restartBtn.style.display = 'none';
+    attempts = 0;
+    hideIndex = Math.floor(Math.random() * 9);
+
+    for (let i = 0; i < 9; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.onclick = () => handleClick(cell, i);
+      gridEl.appendChild(cell);
+    }
+  }
+
+  function handleClick(cell, index) {
+    if (attempts >= 3) return;
+
+    if (index === hideIndex) {
+      cell.textContent = '🎉';
+      cell.classList.add('found');
+      alert('Bạn đã tìm đúng chỗ trốn!');
+      restartBtn.style.display = 'block';
+    } else {
+      cell.textContent = '❌';
+      cell.classList.add('wrong');
+      cell.onclick = null;
+      attempts++;
+      if (attempts >= 3) {
+        brokenHeart.style.display = 'block';
+        restartBtn.style.display = 'block';
+      }
+    }
+  }
+
+  initGame();
+</script>
+
 </body>
 </html>
