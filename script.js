@@ -1,55 +1,27 @@
-const board = document.getElementById("game-board");
-const result = document.getElementById("result");
+const board = document.getElementById("board");
+const status = document.getElementById("status");
+const heart = document.getElementById("heart");
+let correctCell = Math.floor(Math.random() * 9);
+let wrongTries = 0;
 
-let totalCells = 9;
-let hiddenIndex;
-let wrongGuesses = 0;
-
-function setupGame() {
-  // Xóa ô cũ nếu có
-  board.innerHTML = "";
-  result.textContent = "";
-
-  // Reset biến
-  wrongGuesses = 0;
-  hiddenIndex = Math.floor(Math.random() * totalCells);
-
-  for (let i = 0; i < totalCells; i++) {
-    const cell = document.createElement("div");
-    cell.classList.add("cell");
-    cell.dataset.index = i;
-
-    cell.addEventListener("click", () => {
-      if (parseInt(cell.dataset.index) === hiddenIndex) {
-        cell.style.backgroundColor = "lightgreen";
-        cell.textContent = "🎯";
-        result.textContent = "🎉 Bạn đã tìm thấy người đang trốn!";
-        // Vô hiệu hóa tất cả ô
-        disableAllCells();
-      } else {
-        if (cell.style.backgroundColor === "lightcoral") return; // không cho click lại cùng ô
-        cell.style.backgroundColor = "lightcoral";
-        wrongGuesses++;
-        result.textContent = `❌ Sai rồi (${wrongGuesses}/3).`;
-
-        if (wrongGuesses >= 3) {
-          result.textContent = "💥 Bạn đã hết lượt! Game sẽ chơi lại sau 2 giây.";
-          disableAllCells();
-          setTimeout(setupGame, 2000);
-        }
+for (let i = 0; i < 9; i++) {
+  const btn = document.createElement("button");
+  btn.innerText = "?";
+  btn.onclick = () => {
+    if (i === correctCell) {
+      status.innerText = "🎉 Bạn đã tìm đúng!";
+    } else {
+      wrongTries++;
+      btn.disabled = true;
+      btn.innerText = "❌";
+      if (wrongTries >= 3) {
+        status.innerText = "💔 Sai 3 lần rồi! Chơi lại nhé.";
+        heart.style.display = "inline";
+        setTimeout(() => {
+          location.reload();
+        }, 2000);
       }
-    });
-
-    board.appendChild(cell);
-  }
+    }
+  };
+  board.appendChild(btn);
 }
-
-function disableAllCells() {
-  const allCells = document.querySelectorAll(".cell");
-  allCells.forEach(cell => {
-    cell.style.pointerEvents = "none"; // vô hiệu hóa click
-  });
-}
-
-// Bắt đầu game
-setupGame();
